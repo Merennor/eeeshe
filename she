@@ -1,0 +1,3 @@
+# /etc/acpi/events/she
+event=hotkey ASUS010:00 00000039
+action=/etc/acpi/actions/she-cycle.sh
