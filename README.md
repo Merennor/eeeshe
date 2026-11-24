@@ -1,8 +1,21 @@
 # eeeshe
 
-SHE scripts for ASUS Eee PC on FN-Space
+SHE (Super Hybrid Engine) hotkey scripts for ASUS Eee PC.
 
-This repository contains shell (SHE) scripts intended to run on ASUS Eee PC devices configured to use the FN-Space layout or similar custom function-key mappings. The scripts are small utilities and helpers to automate common tasks and to adapt the Eee PC keyboard behavior.
+`she-cycle.sh` cycles the CPU performance mode through the modes exposed by
+the `eeepc_laptop` (or `eeepc-wmi`) driver and shows a desktop notification
+with the new mode.  It is meant to be triggered by the Fn-Space ACPI event,
+but can also be run by hand.
+
+## Requirements
+
+- Linux with the `eeepc_laptop` or `eeepc-wmi` kernel module
+  (`/sys/devices/platform/eeepc/cpufv`).
+- `acpid` to react to the Fn-Space ACPI event.
+- XFCE with `xfce4-notifyd` for the on-screen notification.
+- `sudo`, used to send the notification as the logged-in X user.
+
+The script must run as root: `cpufv` is only writable by root.
 
 ## Installation
 
@@ -13,13 +26,28 @@ git clone https://github.com/Merennor/eeeshe.git
 cd eeeshe
 ```
 
-Make a script executable and run it:
+Install the ACPI action and event:
 
 ```
-chmod +x she-cycle.sh
-./she-cycle.sh
+sudo install -m 755 she-cycle.sh /etc/acpi/actions/she-cycle.sh
+sudo install -m 644 she /etc/acpi/events/she
+sudo systemctl restart acpid   # or: sudo service acpid restart
 ```
 
-# Compatibility
+To run it manually:
 
-The scripts are designed for XFCE desktop environment and may not work as intended on other desktop environments.  Tested on ASUS Eee PC 1001PXD, but they may work on other models with similar keyboard configurations.
+```
+sudo ./she-cycle.sh
+```
+
+## How it works
+
+`cpufv` reports `(mode_count << 8) | current_mode`, for example `0x301`
+means three modes with mode 1 selected.  Modes are 0-based and, on the
+1001PXD, are `0 = Performance`, `1 = Normal`, `2 = Powersave`.
+
+## Compatibility
+
+Tested on an ASUS Eee PC 1001PXD (Arch Linux, kernel 7.3.5-zen) with XFCE.
+Other models exposing the same `cpufv` interface should work.  The kernel
+driver disables `cpufv` on the 701/702, where the script simply exits.
