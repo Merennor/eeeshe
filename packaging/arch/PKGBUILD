@@ -1,0 +1,20 @@
+pkgname=eeeshe
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='ASUS Eee PC Super Hybrid Engine hotkey script'
+arch=('any')
+url='https://github.com/Merennor/eeeshe'
+license=('MIT')
+depends=('bash' 'acpid' 'sudo' 'procps-ng' 'gawk' 'sed' 'coreutils' 'util-linux')
+optdepends=('libnotify: desktop notifications' 'xfce4-notifyd: XFCE notification daemon')
+source=("https://github.com/Merennor/eeeshe/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+  cd "$srcdir/eeeshe-$pkgver"
+  install -Dm755 she-cycle.sh "$pkgdir/usr/bin/she-cycle"
+  install -Dm644 she "$pkgdir/etc/acpi/events/she"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/eeeshe/README.md"
+  install -d "$pkgdir/etc/acpi/actions"
+  ln -s /usr/bin/she-cycle "$pkgdir/etc/acpi/actions/she-cycle.sh"
+}

@@ -19,6 +19,38 @@ The script must run as root: `cpufv` is only writable by root.
 
 ## Installation
 
+### Debian / Ubuntu
+
+Download the `.deb` file from the
+[GitHub Releases](https://github.com/Merennor/eeeshe/releases) page and install
+it with:
+
+```
+sudo apt install ./eeeshe_*_all.deb
+```
+
+The package installs the script and ACPI event, then attempts to restart
+`acpid`. It depends on `acpid` and the utilities used by the script.
+`xfce4-notifyd` and `libnotify-bin` are recommended for desktop notifications.
+
+### Arch Linux
+
+Download the `.pkg.tar.zst` file from
+[GitHub Releases](https://github.com/Merennor/eeeshe/releases), then install it:
+
+```
+sudo pacman -U ./eeeshe-*.pkg.tar.zst
+```
+
+The package installs the script and ACPI event. Restart `acpid` after
+installation if needed:
+
+```
+sudo systemctl restart acpid
+```
+
+### Install from source
+
 Clone the repository:
 
 ```

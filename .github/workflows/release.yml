@@ -1,0 +1,51 @@
+name: Build release packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  deb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build Debian package
+        run: bash packaging/build-deb.sh "${GITHUB_REF_NAME#v}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: deb-package
+          path: eeeshe_*_all.deb
+
+  arch:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build Arch package
+        run: |
+          pacman -Sy --noconfirm --needed base-devel acpid sudo procps-ng gawk sed coreutils util-linux
+          useradd -m builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          su builder -c "cd '$GITHUB_WORKSPACE/packaging/arch' && \
+            sed -i 's/^pkgver=.*/pkgver=${GITHUB_REF_NAME#v}/' PKGBUILD && \
+            makepkg --noconfirm --clean"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: arch-package
+          path: packaging/arch/*.pkg.tar.zst
+
+  publish:
+    needs: [deb, arch]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v3
+        with:
+          files: dist/*

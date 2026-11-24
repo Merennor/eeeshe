@@ -1,0 +1,11 @@
+Package: eeeshe
+Version: 0.1.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: bash, acpid, sudo, procps, gawk, sed, coreutils, util-linux
+Recommends: xfce4-notifyd, libnotify-bin
+Maintainer: Merennor
+Description: ASUS Eee PC Super Hybrid Engine hotkey script
+ Cycles the CPU performance mode exposed by the eeepc kernel driver
+ and displays a desktop notification.
